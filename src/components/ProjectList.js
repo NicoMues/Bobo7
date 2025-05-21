@@ -1,43 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function ProjectList({ onOpenProject }) {
-  const [projects, setProjects] = useState(() => {
-    const saved = localStorage.getItem('projects');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [newName, setNewName] = useState('');
+const projectsMock = [
+  { id: 1, title: "Mein erstes Hörbuch" },
+  { id: 2, title: "Projekt Bobo7" },
+];
 
-  function saveProjects(newProjects) {
-    setProjects(newProjects);
-    localStorage.setItem('projects', JSON.stringify(newProjects));
-  }
-
-  function createProject() {
-    if (!newName.trim()) return alert('Bitte Projektnamen eingeben');
-    if (projects.find(p => p.name === newName.trim())) return alert('Projektname existiert schon');
-    const newProject = { id: Date.now().toString(), name: newName.trim(), chapters: [] };
-    const updated = [...projects, newProject];
-    saveProjects(updated);
-    setNewName('');
-  }
-
+export default function ProjectList() {
   return (
-    <div className="project-list">
-      <h2>Projekte</h2>
+    <div>
+      <h1>Deine Projekte</h1>
       <ul>
-        {projects.map(p => (
-          <li key={p.id}>
-            {p.name}{' '}
-            <button onClick={() => onOpenProject(p)}>Öffnen</button>
+        {projectsMock.map((project) => (
+          <li key={project.id}>
+            <Link to={`/projects/${project.id}`}>{project.title}</Link>
           </li>
         ))}
       </ul>
-      <input
-        placeholder="Neues Projekt"
-        value={newName}
-        onChange={e => setNewName(e.target.value)}
-      />
-      <button onClick={createProject}>Anlegen</button>
+      <Link to="/">Zurück zur Startseite</Link>
     </div>
   );
 }
