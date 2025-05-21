@@ -1,28 +1,22 @@
 // src/pages/Dashboard.js
-import React, { useEffect, useState } from "react";
-import { db } from "../firebase";  // Firestore importieren
-import { collection, getDocs } from "firebase/firestore";
+import React from 'react';
+import { auth } from '../firebase';
+import { signOut } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
-  const [projects, setProjects] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchProjects() {
-      const querySnapshot = await getDocs(collection(db, "projects"));
-      const projectsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setProjects(projectsData);
-    }
-    fetchProjects();
-  }, []);
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate('/login');
+  };
 
   return (
     <div>
       <h1>Dashboard</h1>
-      <ul>
-        {projects.map(project => (
-          <li key={project.id}>{project.name}</li>
-        ))}
-      </ul>
+      <p>Willkommen!</p>
+      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 }
