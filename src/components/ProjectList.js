@@ -1,26 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 export default function ProjectList() {
+  // Projekte im State
   const [projects, setProjects] = useState([]);
 
-  // Projekte aus localStorage laden beim Start
+  // Beim Laden: Projekte aus localStorage lesen
   useEffect(() => {
-    const storedProjects = localStorage.getItem("projects");
-    if (storedProjects) {
-      setProjects(JSON.parse(storedProjects));
+    const savedProjects = localStorage.getItem("projects");
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects));
     }
   }, []);
 
+  // Projekte in localStorage speichern, wenn sich 'projects' ändert
+  useEffect(() => {
+    localStorage.setItem("projects", JSON.stringify(projects));
+  }, [projects]);
+
+  // Beispiel: Neues Projekt hinzufügen (kannst du anpassen)
+  const addProject = () => {
+    const newProject = {
+      id: Date.now().toString(),
+      title: "Neues Projekt",
+      description: "Projektbeschreibung",
+    };
+    setProjects([...projects, newProject]);
+  };
+
   return (
     <div>
-      <h1>Deine Projekte</h1>
-      <Link to="/projects/new">Neues Projekt erstellen</Link>
+      <h2>Deine Projekte</h2>
+      <button onClick={addProject}>Projekt hinzufügen</button>
       <ul>
-        {projects.length === 0 && <li>Keine Projekte vorhanden</li>}
-        {projects.map((project) => (
-          <li key={project.id}>
-            <Link to={`/projects/${project.id}`}>{project.title}</Link>
+        {projects.map((proj) => (
+          <li key={proj.id}>
+            <strong>{proj.title}</strong>: {proj.description}
           </li>
         ))}
       </ul>
