@@ -1,71 +1,69 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 export default function ProjectEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [project, setProject] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   useEffect(() => {
-    if (id && id !== "new") {
-      // Projekt aus localStorage laden
-      const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-      const project = storedProjects.find((p) => p.id === id);
-      if (project) {
-        setTitle(project.title);
-        setDescription(project.description);
-      }
+    const savedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+    const found = savedProjects.find((p) => p.id === id);
+    if (!found) {
+      alert("Projekt nicht gefunden!");
+      navigate("/projects");
+      return;
     }
-  }, [id]);
+    setProject(found);
+    setTitle(found.title);
+    setDescription(found.description);
+  }, [id, navigate]);
 
-  const handleSave = () => {
-    const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-
-    if (id === "new") {
-      // Neues Projekt anlegen
-      const newProject = {
-        id: Date.now().toString(),
-        title,
-        description,
-      };
-      storedProjects.push(newProject);
-    } else {
-      // Bestehendes Projekt bearbeiten
-      const index = storedProjects.findIndex((p) => p.id === id);
-      if (index !== -1) {
-        storedProjects[index] = { id, title, description };
-      }
-    }
-
-    localStorage.setItem("projects", JSON.stringify(storedProjects));
-    navigate("/projects");
+  const saveProject = () => {
+    if (!title.trim()) return alert("Titel darf nicht leer sein!");
+    const savedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+    const updatedProjects = savedProjects.map((p) =>
+      p.id === id ? { ...p, title: title.trim(), description: description.trim() } : p
+    );
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    alert("Projekt gespeichert!");
   };
 
+  if (!project) return null;
+
   return (
-    <div>
-      <h1>{id === "new" ? "Neues Projekt erstellen" : "Projekt bearbeiten"}</h1>
-      <label>
-        Titel:
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Titel eingeben"
-        />
-      </label>
-      <br />
-      <label>
-        Beschreibung:
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Beschreibung eingeben"
-        />
-      </label>
-      <br />
-      <button onClick={handleSave}>Speichern</button>
+    <div style={{ padding: 20 }}>
+      <h2>Projekt bearbeiten</h2>
+      <div>
+        <label>
+          Titel:
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{ marginLeft: 10, width: "300px" }}
+          />
+        </label>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <label>
+          Beschreibung:
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            style={{ marginLeft: 10, width: "300px", height: "100px" }}
+          />
+        </label>
+      </div>
+      <button onClick={saveProject} style={{ marginTop: 10 }}>
+        Speichern
+      </button>
+      <div style={{ marginTop: 20 }}>
+        <Link to="/projects">← Zurück zur Projektübersicht</Link>
+      </div>
     </div>
   );
 }
