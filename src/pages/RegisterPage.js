@@ -1,57 +1,36 @@
-import React, { useState } from 'react';
-import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-function RegisterPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+const RegisterPage = () => {
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const { register } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Optional: Nutzerinfo in Firestore speichern
-      await addDoc(collection(db, 'users'), {
-        uid: user.uid,
-        email: user.email,
-        createdAt: new Date()
-      });
-
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
+      setError("");
+      await register(emailRef.current.value, passwordRef.current.value);
+      navigate("/dashboard");
+    } catch {
+      setError("Fehler bei der Registrierung");
     }
   };
 
   return (
     <div>
-      <h1>Registrierung</h1>
-      <form onSubmit={handleRegister}>
-        <input
-          type="email"
-          placeholder="E-Mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Passwort"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+      <h2>Registrieren</h2>
+      {error && <p>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <input type="email" ref={emailRef} placeholder="Email" required />
+        <input type="password" ref={passwordRef} placeholder="Passwort" required />
         <button type="submit">Registrieren</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
-}
+};
 
 export default RegisterPage;
