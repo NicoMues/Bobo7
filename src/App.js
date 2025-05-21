@@ -11,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/projects" element={<ProjectList />} />
+        <Route path="/projects/new" element={<ProjectEditor />} />
         <Route path="/projects/:id" element={<ProjectEditor />} />
       </Routes>
     </Router>
