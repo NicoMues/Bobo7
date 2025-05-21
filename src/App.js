@@ -1,18 +1,22 @@
+// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
-import ProjectList from "./components/ProjectList";
-import ProjectEditor from "./components/ProjectEditor";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import Dashboard from "./pages/Dashboard";
+import ProjectEditor from "./pages/ProjectEditor";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/projects" element={<ProjectList />} />
-        <Route path="/projects/new" element={<ProjectEditor />} />
-        <Route path="/projects/:id" element={<ProjectEditor />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/projects/:projectId" element={<ProjectEditor />} />
       </Routes>
     </Router>
   );
